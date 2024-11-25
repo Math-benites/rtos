@@ -23,6 +23,7 @@ const int ledOutputPin = 23;     // Pino do LED que acende durante a rotina
 const int readyLedPin = 18;      // Pino do LED que indica que o sistema está pronto
 const int runningLedPin = 19;  // Pino da LED que indica que a rotina está em execução
 const int runningLed2Pin = 5;  // Pino do segundo LED de execução (novo)
+const int esp32_led = 2; // led ESP32
 
 int credit = 0;                 // Variável para armazenar créditos
 DHT dht(DHTPIN, DHTTYPE);
