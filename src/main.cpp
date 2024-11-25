@@ -7,9 +7,9 @@ void update_menu_lcd();
 void checkButton();
 void checkStartButton();
 void displayCredits();
-void readDHTSensor();
+void readDHTSensor(); 
 void rotina();
-
+ 
 // Endereço I2C do LCD
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
