@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "buttons.h"
 #include "lcd.h"
-#include "dht.h"
 #include "routine.h"
 
 int credit = 0;  // Definindo a variável global 'credit'

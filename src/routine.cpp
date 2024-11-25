@@ -9,6 +9,8 @@ const int runningLed2Pin = 5;
 volatile bool startRoutine = false;
 volatile bool isRoutineRunning = false;
 
+extern int credit; // Adicionando a variável 'credit' que vem do 'buttons.cpp'
+
 void initRoutine() {
     pinMode(ledOutputPin, OUTPUT);
     pinMode(readyLedPin, OUTPUT);
@@ -23,7 +25,7 @@ void routineTask(void *pvParameters) {
             isRoutineRunning = true;
 
             digitalWrite(runningLedPin, HIGH);
-            digitalWrite(readyLedPin, LOW);
+            digitalWrite(readyLedPin, LOW);  // Desliga o LED quando a rotina começar
             digitalWrite(ledOutputPin, HIGH);
 
             vTaskDelay(6000 / portTICK_PERIOD_MS);
@@ -39,6 +41,13 @@ void routineTask(void *pvParameters) {
             isRoutineRunning = false;
         }
 
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        // Controle do LED "readyLedPin" com base no crédito
+        if (credit > 0) {
+            digitalWrite(readyLedPin, HIGH);  // Acende o LED quando há crédito
+        } else {
+            digitalWrite(readyLedPin, LOW);   // Apaga o LED quando não há crédito
+        }
+
+        vTaskDelay(100 / portTICK_PERIOD_MS); // Atualiza a cada 100ms
     }
 }
