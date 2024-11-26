@@ -1,6 +1,13 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <Preferences.h>
+#include <Wire.h>
+
+const int ledOutputPin = 23;     // Pino do LED que acende durante a rotina
+const int readyLedPin = 18;      // Pino do LED que indica que o sistema está pronto
+const int runningLedPin = 19;  // Pino da LED que indica que a rotina está em execução
+const int esp32_led = 2; // led ESP32
+const int runningLed2Pin = 5;  // Pino do segundo LED de execução (novo)
 
 #define BUTTON_PIN 34  // Pino para o botão de reset
 
@@ -23,6 +30,10 @@ unsigned long buttonPressTime = 0;  // Armazenar o tempo de pressionamento do bo
 void setup() {
   Serial.begin(115200);  // Inicializa a comunicação serial
 
+  pinMode(ledOutputPin, OUTPUT);
+  pinMode(esp32_led, OUTPUT);
+  pinMode(readyLedPin, OUTPUT); // Configura o pino do LED de pronto
+  pinMode(runningLedPin, OUTPUT);  // Configura o pino da LED como saída
   pinMode(BUTTON_PIN, INPUT_PULLDOWN);  // Configura o pino como entrada com pull-down (quando pressionado, pino vai para LOW)
 
   loadWiFiConfig();  // Carrega as configurações de Wi-Fi salvas
@@ -87,9 +98,15 @@ void loop() {
 
   // Se o botão foi pressionado por mais de 3 segundos, limpa configurações e reinicia
   if (buttonPressed && millis() - buttonPressTime > 3000) {
+    digitalWrite(readyLedPin, HIGH);
+    digitalWrite(runningLedPin, HIGH);
+    digitalWrite(esp32_led, HIGH);
     Serial.println("Botão pressionado por 3 segundos! Limpando preferências...");
     clearWiFiConfig();  // Limpa as configurações salvas
-    delay(1000);  // Espera um pouco antes de reiniciar
+    delay(2000);  // Espera um pouco antes de reiniciar
+    digitalWrite(readyLedPin, LOW);
+    digitalWrite(runningLedPin, LOW);
+    digitalWrite(esp32_led, LOW);
     ESP.restart();  // Reinicia o ESP32
   }
 
@@ -145,7 +162,7 @@ void handleConfig() {
     preferences.end();  // Finaliza a operação
 
     WiFi.begin(newSSID.c_str(), newPassword.c_str());  // Tenta conectar ao novo Wi-Fi
-    server.send(200, "text/html", "<html><body><h1>Configurações Salvas! Reiniciando...</h1></body></html>");
+    server.send(200, "text/html", "<html><head><meta charset=\"UTF-8\"><body><h1>Configurações Salvas! Reiniciando...</h1></head></body></html>");
     delay(1000);  // Aguarda um pouco antes de reiniciar
     ESP.restart();  // Reinicia o ESP32
   } else {
